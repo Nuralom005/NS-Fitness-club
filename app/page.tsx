@@ -9,7 +9,7 @@ import {
   Menu, X, MapPin, Phone, Mail, Clock, MessageCircle, Star,
   Check, Activity, Users, TrendingUp, Target, Zap
 } from "lucide-react";
-import { gym, submitContactEnquiry } from "@/lib/gym";
+import { gym, membershipPlans, submitContactEnquiry } from "@/lib/gym";
 
 const programs = [
   { name: "Strength Training", description: "Build strength and develop muscle with structured resistance training.", image: "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=900&q=85" },
@@ -21,7 +21,7 @@ const programs = [
 ];
 
 const navItems = ["Home", "About Us", "Programs", "Facilities", "Trainers", "Membership", "Contact"];
-const sectionIds = ["home", "about", "programs", "facilities", "trainers", "membership", "contact"];
+const sectionIds = ["home", "about", "programs", "facilities", "trainers", "membership-plans", "contact"];
 
 type FormValues = {
   fullName: string;
@@ -55,7 +55,7 @@ export default function Page() {
   const [testimonial, setTestimonial] = useState(0);
   const [formStatus, setFormStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [formError, setFormError] = useState("");
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<FormValues>();
+  const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm<FormValues>();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -65,8 +65,16 @@ export default function Page() {
   }, []);
 
   const scrollTo = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+    document.getElementById(id)?.scrollIntoView({ behavior, block: "start" });
     setMenuOpen(false);
+  };
+
+  const enquireAboutMembership = (planName: string) => {
+    setValue("interestedProgram", planName, { shouldValidate: true });
+    setFormError("");
+    setFormStatus("idle");
+    scrollTo("contact");
   };
 
   const onSubmit = async (values: FormValues) => {
@@ -96,7 +104,7 @@ export default function Page() {
             <button key={item} onClick={() => scrollTo(sectionIds[index])}>{item}</button>
           ))}
         </div>
-        <button className="nav-cta" onClick={() => scrollTo("membership")}>Join Now <ArrowRight size={15} /></button>
+        <button className="nav-cta" onClick={() => scrollTo("membership-plans")}>Join Now <ArrowRight size={15} /></button>
         <button className="menu-button" aria-label="Toggle menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
           {menuOpen ? <X /> : <Menu />}
         </button>
@@ -124,7 +132,7 @@ export default function Page() {
           <h1>Build your<br /><span>strongest self.</span></h1>
           <p className="hero-subtitle">More than a gym. A community built on strength, discipline, and transformation.</p>
           <div className="hero-actions">
-            <button className="button button-gold" onClick={() => scrollTo("membership")}>Explore membership</button>
+          <button className="button button-gold" onClick={() => scrollTo("membership-plans")}>Explore membership</button>
             <button className="button button-outline" onClick={() => scrollTo("contact")}>Start your fitness journey</button>
           </div>
         </motion.div>
@@ -231,7 +239,34 @@ export default function Page() {
             </motion.article>
           ))}
         </div>
-        <button className="button button-gold membership-cta" onClick={() => scrollTo("contact")}>Discover membership</button>
+        <button className="button button-gold membership-cta" onClick={() => scrollTo("membership-plans")}>Discover Membership</button>
+      </section>
+
+      <section id="membership-plans" className="section membership-plans-section" aria-labelledby="membership-plans-title">
+        <div className="membership-plans-heading">
+          <p className="eyebrow">Membership plans</p>
+          <h2 id="membership-plans-title">Choose your <span>commitment.</span></h2>
+          <p>Pick the membership that fits your training goals and timeline.</p>
+        </div>
+        <div className="membership-plan-grid">
+          {membershipPlans.map((plan, index) => (
+            <article className={`membership-plan-card${plan.badge ? " featured" : ""}`} key={plan.name} aria-labelledby={`membership-plan-${index}`}>
+              {plan.badge && <span className="membership-plan-badge">{plan.badge}</span>}
+              <p className="membership-plan-duration">{plan.duration}</p>
+              <h3 id={`membership-plan-${index}`}>{plan.name}</h3>
+              <p className="membership-plan-price" aria-label={`${plan.name}, ${plan.price} total`}>
+                <span>{plan.price}</span><small>total</small>
+              </p>
+              <p className="membership-plan-description">{plan.description}</p>
+              <ul className="membership-plan-benefits">
+                {plan.benefits.map((benefit) => <li key={benefit}><Check aria-hidden="true" size={16} />{benefit}</li>)}
+              </ul>
+              <button className="button button-gold membership-plan-cta" type="button" onClick={() => enquireAboutMembership(plan.name)}>
+                Enquire about this plan <ArrowRight size={16} aria-hidden="true" />
+              </button>
+            </article>
+          ))}
+        </div>
       </section>
 
       <section className="why-section">
@@ -269,7 +304,7 @@ export default function Page() {
           <p className="eyebrow">Your next chapter</p>
           <h2>Your transformation<br /><span>starts here.</span></h2>
           <p>Take the first step toward a stronger, healthier version of yourself.</p>
-          <button className="button button-gold" onClick={() => scrollTo("contact")}>Join NS Fitness Club</button>
+          <button className="button button-gold" onClick={() => scrollTo("membership-plans")}>Join NS Fitness Club</button>
         </div>
       </section>
 
@@ -289,7 +324,7 @@ export default function Page() {
               <label>Full name<input autoComplete="name" {...register("fullName", { required: "Please enter your name", minLength: { value: 2, message: "Name must be at least 2 characters" }, maxLength: { value: 100, message: "Name must be 100 characters or fewer" } })} placeholder="Your name" />{errors.fullName && <span>{errors.fullName.message}</span>}</label>
               <label>Phone number<input type="tel" autoComplete="tel" {...register("phoneNumber", { required: "Please enter your phone number", validate: (value) => isValidIndianMobileNumber(value) || "Enter a valid 10-digit Indian mobile number" })} placeholder="+91 98765 43210" />{errors.phoneNumber && <span>{errors.phoneNumber.message}</span>}</label>
               <label>Email<input type="email" {...register("email", { required: "Please enter your email", pattern: { value: /^\S+@\S+\.\S+$/, message: "Enter a valid email" } })} placeholder="you@example.com" />{errors.email && <span>{errors.email.message}</span>}</label>
-              <label>Interested program<select {...register("interestedProgram", { required: "Please select a program" })}><option value="">Select a program</option>{programs.map((program) => <option key={program.name}>{program.name}</option>)}</select>{errors.interestedProgram && <span>{errors.interestedProgram.message}</span>}</label>
+              <label>Interested program or membership<select {...register("interestedProgram", { required: "Please select a program or membership" })}><option value="">Select a program or membership</option><optgroup label="Training programs">{programs.map((program) => <option key={program.name} value={program.name}>{program.name}</option>)}</optgroup><optgroup label="Membership plans">{membershipPlans.map((plan) => <option key={plan.name} value={plan.name}>{plan.name}</option>)}</optgroup></select>{errors.interestedProgram && <span>{errors.interestedProgram.message}</span>}</label>
               <label className="full-field">Message<textarea {...register("message", { required: "Please add a message", minLength: { value: 10, message: "Please provide at least 10 characters of detail" }, maxLength: { value: 2000, message: "Message must be 2,000 characters or fewer" } })} placeholder="Tell us about your fitness goals" />{errors.message && <span>{errors.message.message}</span>}</label>
             </div>
             <button className="button button-gold form-button" type="submit" disabled={formStatus === "loading"}>

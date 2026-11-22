@@ -13,6 +13,47 @@ export const gym = {
   contactApi: "/api/contact"
 };
 
+export type MembershipPlan = {
+  name: string;
+  duration: string;
+  price: string;
+  description: string;
+  benefits: string[];
+  badge?: string;
+};
+
+export const membershipPlans: MembershipPlan[] = [
+  {
+    name: "1 Month Membership",
+    duration: "1 month",
+    price: "₹1,000",
+    description: "A flexible way to get started with your training routine.",
+    benefits: ["1 month of gym access", "Strength and cardio equipment", "Train at your own pace"]
+  },
+  {
+    name: "3 Months Membership",
+    duration: "3 months",
+    price: "₹2,500",
+    description: "Build consistency with a quarter of focused training.",
+    benefits: ["3 months of gym access", "Strength and cardio equipment", "Time to build a steady routine"]
+  },
+  {
+    name: "1 Year Membership",
+    duration: "12 months",
+    price: "₹8,000",
+    description: "A full year to stay focused on your fitness goals.",
+    benefits: ["12 months of gym access", "Strength and cardio equipment", "Best value for long-term training"],
+    badge: "Best value"
+  },
+  {
+    name: "1 Year + Trainer Membership",
+    duration: "12 months + personal trainer",
+    price: "₹12,000",
+    description: "Long-term gym access with personal trainer support included.",
+    benefits: ["12 months of gym access", "Personal trainer support included", "Structured guidance and progress tracking"]
+  }
+];
+
 export type ContactEnquiry = {
   fullName: string;
   phoneNumber: string;
