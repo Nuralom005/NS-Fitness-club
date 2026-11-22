@@ -6,10 +6,11 @@ import { useForm } from "react-hook-form";
 import { motion } from "framer-motion";
 import {
   ArrowRight, ChevronDown, Dumbbell, HeartPulse, Instagram, Facebook,
-  Menu, X, MapPin, Phone, Mail, Clock, MessageCircle, Star,
+  Menu, X, MapPin, Phone, Mail, Clock, MessageCircle,
   Check, Activity, Users, TrendingUp, Target, Zap
 } from "lucide-react";
 import { gym, membershipPlans, submitContactEnquiry } from "@/lib/gym";
+import MemberReviews from "@/components/MemberReviews";
 
 const programs = [
   { name: "Strength Training", description: "Build strength and develop muscle with structured resistance training.", image: "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=900&q=85" },
@@ -52,7 +53,6 @@ function Logo() {
 export default function Page() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [testimonial, setTestimonial] = useState(0);
   const [formStatus, setFormStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [formError, setFormError] = useState("");
   const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm<FormValues>();
@@ -89,11 +89,6 @@ export default function Page() {
       setFormStatus("error");
     }
   };
-
-  const testimonials = [
-    { name: "Sample Member", text: "The NS Fitness Club environment keeps me focused and motivated every week.", role: "Sample testimonial" },
-    { name: "Community Member", text: "A focused, welcoming space with the equipment and support I need to train consistently.", role: "Sample testimonial" }
-  ];
 
   return (
     <main>
@@ -281,21 +276,7 @@ export default function Page() {
         </div>
       </section>
 
-      <section className="section testimonial-section">
-        <div className="testimonial-heading">
-          <p className="eyebrow">Member stories</p>
-          <h2>Real motivation.<br /><span>Shared progress.</span></h2>
-        </div>
-        <div className="testimonial-card">
-          <div className="stars">{[1,2,3,4,5].map((star) => <Star key={star} size={17} fill="currentColor" />)}</div>
-          <blockquote>&ldquo;{testimonials[testimonial].text}&rdquo;</blockquote>
-          <p><strong>{testimonials[testimonial].name}</strong><br /><span>{testimonials[testimonial].role}</span></p>
-          <div className="testimonial-controls">
-            <button aria-label="Previous testimonial" onClick={() => setTestimonial(testimonial === 0 ? testimonials.length - 1 : testimonial - 1)}>←</button>
-            <button aria-label="Next testimonial" onClick={() => setTestimonial((testimonial + 1) % testimonials.length)}>→</button>
-          </div>
-        </div>
-      </section>
+      <MemberReviews />
 
       <section className="cta-section">
         <Image src="https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?auto=format&fit=crop&w=2200&q=85" alt="Athlete working out" fill sizes="100vw" />
